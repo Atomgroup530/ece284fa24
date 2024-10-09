@@ -28,6 +28,20 @@ wire [psum_bw-1:0] result1;
 
 assign result0 = psum_q+a_q*b_q;
 
+wire prod_sign, psum_q_sign;
+wire [psum_bw-2:0] prod_mag;
+wire [psum_bw-2:0] psum_q_mag;
+
+assign prod_sign = (a_q&b_q) ? a_q[bw-1] ^ b_q[bw-1] : 0;
+assign prod_mag = a_q[bw-2:0] * b_q[bw-2:0];
+assign psum_q_sign = psum_q[psum_bw-1];
+assign psum_q_mag = psum_q[psum_bw-2:0];
+assign result1 = (prod_sign ^ psum_q_sign)? (
+                     (prod_mag == psum_q_mag)? 0
+                     : (prod_mag > psum_q_mag)? {prod_sign,(prod_mag-psum_q_mag)}
+                     : {psum_q_sign, (psum_q_mag-prod_mag)}
+                  ) : {prod_sign,(prod_mag+psum_q_mag)};
+
 always @(posedge clk) begin
    a_q <= A;
    b_q <= B;
