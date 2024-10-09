@@ -23,5 +23,24 @@ assign out = psum_q;
 
 // Your code goes here
 
+wire [psum_bw-1:0] result0;
+wire [psum_bw-1:0] result1;
+
+assign result0 = psum_q+a_q*b_q;
+
+always @(posedge clk) begin
+   a_q <= A;
+   b_q <= B;
+
+   if (reset) begin
+      psum_q <= 0;
+   end else begin
+      if (acc) begin
+         psum_q <= (format)? result1 : result0;
+      end
+   end
+
+end
+
 
 endmodule
