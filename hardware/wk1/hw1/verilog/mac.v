@@ -22,7 +22,7 @@ reg signed [bw-1:0] b_q;
 assign out = psum_q;
 
 // Your code goes here
-
+// Path: /home/linux/ieng6/ee284fa24/xul007/hardware/wk1/hw1
 wire [psum_bw-1:0] result0;
 wire [psum_bw-1:0] result1;
 
