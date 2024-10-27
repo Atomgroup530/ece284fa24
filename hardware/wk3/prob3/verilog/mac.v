@@ -1,6 +1,6 @@
 // Created by prof. Mingu Kang @VVIP Lab in UCSD ECE department
 // Please do not spread this code without permission 
-module mac (out, a, b, c);
+module mac (out, a, b, c, d);
 
 parameter bw = 4;
 parameter psum_bw = 16;
@@ -9,13 +9,16 @@ parameter psum_bw = 16;
 
 input unsigned [bw-1:0] a;      // unsigned activation
 input signed [bw-1:0] b;        // signed weight
-input signed [psum_bw-1:0] c;   // signed psum
-output signed [psum_bw-1:0] out;// signed output
+input signed [bw-1:0] c; 
+input signed [bw-1:0] d; 
+output signed [2*bw:0] out;// signed output
 
 wire signed [bw:0] a_ex;
+wire signed [bw:0] c_ex;
 
 assign a_ex = a;
+assign c_ex = c;
 
-assign out = c + a_ex * b;
+assign out = c_ex * d + a_ex * b;
 
 endmodule

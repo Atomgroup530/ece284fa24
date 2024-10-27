@@ -11,7 +11,9 @@ reg clk = 0;
 
 reg  [bw-1:0] a;
 reg  [bw-1:0] b;
-reg  [psum_bw-1:0] c;
+reg  [bw-1:0] c;
+reg  [bw-1:0] d;
+reg  [psum_bw-1:0] psum;
 wire [psum_bw-1:0] out;
 reg  [psum_bw-1:0] expected_out = 0;
 
@@ -21,8 +23,8 @@ integer w_scan_file ; // file handler
 integer x_file ; // file handler
 integer x_scan_file ; // file handler
 
-integer x_dec;
-integer w_dec;
+integer Aa_dec, Ac_dec;
+integer Wb_dec, Wd_dec;
 integer i; 
 integer u; 
 
@@ -103,9 +105,15 @@ function [psum_bw-1:0] mac_predicted;
   
   input signed [bw:0] a;       // unsigned activation
   input signed [bw-1:0] b;        // signed weight
-  input signed [psum_bw-1:0] c;   // signed psum
+  input signed [bw:0] c;
+  input signed [bw-1:0] d;
+  input signed [bw:0] a_q;       // unsigned activation
+  input signed [bw-1:0] b_q;        // signed weight
+  input signed [bw:0] c_q;
+  input signed [bw-1:0] d_q;
+  input signed [psum_bw-1:0] psum;
 
-  mac_predicted = c + a*b;
+  mac_predicted = a*b + c*d + a_q*b_q + c_q*d_q + psum;
 
 endfunction
 
@@ -116,9 +124,15 @@ mac_wrapper #(.bw(bw), .psum_bw(psum_bw)) mac_wrapper_instance (
         .a(a), 
         .b(b),
         .c(c),
+        .d(d),
+        .psum(psum),
 	.out(out)
 ); 
  
+reg  [bw-1:0] a_q;
+reg  [bw-1:0] b_q;
+reg  [bw-1:0] c_q;
+reg  [bw-1:0] d_q;
 
 initial begin 
 
@@ -140,15 +154,25 @@ initial begin
      #1 clk = 1'b1;
      #1 clk = 1'b0;
 
-     w_scan_file = $fscanf(w_file, "%d\n", w_dec);
-     x_scan_file = $fscanf(x_file, "%d\n", x_dec);
+     w_scan_file = $fscanf(w_file, "%d\n", Wb_dec);
+     w_scan_file = $fscanf(w_file, "%d\n", Wd_dec);
+     x_scan_file = $fscanf(x_file, "%d\n", Aa_dec);
+     x_scan_file = $fscanf(x_file, "%d\n", Ac_dec);
 
-     a = x_bin(x_dec); // unsigned number
-     b = w_bin(w_dec); // signed number
-     c = expected_out;
+     a = x_bin(Aa_dec); // unsigned number
+     b = w_bin(Wb_dec); // signed number
+     c = x_bin(Ac_dec);
+     d = w_bin(Wd_dec);
+     psum = expected_out;
 
-     expected_out = mac_predicted(a, b, c);
-
+     if (i%2 == 0) begin
+      a_q <= a;
+      b_q <= b;
+      c_q <= c;
+      d_q <= d;
+     end
+     else
+      expected_out = mac_predicted(a, b, c, d, a_q, b_q, c_q, d_q, psum);
   end
 
 

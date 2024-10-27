@@ -1,3 +1,4 @@
 ./verilog/mac.v
+./verilog/acc.v
 ./verilog/mac_tb.v
 ./verilog/mac_wrapper.v
