@@ -7,11 +7,15 @@ parameter psum_bw = 16;
 
 // my code
 
-input signed [bw-1:0] a;               // unsigned activation
+input unsigned [bw-1:0] a;      // unsigned activation
 input signed [bw-1:0] b;        // signed weight
 input signed [psum_bw-1:0] c;   // signed psum
 output signed [psum_bw-1:0] out;// signed output
 
-assign out = c + a * b;
+wire signed [bw:0] a_ex;
+
+assign a_ex = {2'b0,a};
+
+assign out = c + a_ex * b;
 
 endmodule

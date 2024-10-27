@@ -101,7 +101,7 @@ endfunction
 // Below function is for verification
 function [psum_bw-1:0] mac_predicted;
   
-  input signed [bw-1:0] a;               // unsigned activation
+  input signed [bw:0] a;       // unsigned activation
   input signed [bw-1:0] b;        // signed weight
   input signed [psum_bw-1:0] c;   // signed psum
 
