@@ -118,6 +118,8 @@ function [psum_bw-1:0] mac_predicted;
 endfunction
 
 
+reg out_high=0;
+reg compare_high=0;
 
 mac_wrapper #(.bw(bw), .psum_bw(psum_bw)) mac_wrapper_instance (
 	.clk(clk), 
@@ -126,6 +128,7 @@ mac_wrapper #(.bw(bw), .psum_bw(psum_bw)) mac_wrapper_instance (
         .c(c),
         .d(d),
         .psum(psum),
+        .out_high(out_high),
 	.out(out)
 ); 
  
@@ -133,6 +136,11 @@ reg  [bw-1:0] a_q;
 reg  [bw-1:0] b_q;
 reg  [bw-1:0] c_q;
 reg  [bw-1:0] d_q;
+
+reg signed [psum_bw-1:0] out_print;
+reg signed [psum_bw-1:0] expected_print;
+
+
 
 initial begin 
 
@@ -152,6 +160,10 @@ initial begin
   for (i=0; i<10; i=i+1) begin  // Data lenght is 10 in the data files
 
      #1 clk = 1'b1;
+     if (compare_high && i > 2) begin
+      if (expected_print == out_print) $display("Output match\n");
+      else $display("Output don't match, expected=%d, out=%d\n", expected_print, out_print);
+     end
      #1 clk = 1'b0;
 
      w_scan_file = $fscanf(w_file, "%d\n", Wb_dec);
@@ -164,18 +176,40 @@ initial begin
      c = x_bin(Ac_dec);
      d = w_bin(Wd_dec);
      psum = expected_out;
+     out_print = out;
+     expected_print = expected_out;
+
+    //  $display("a=%d, b=%d, c=%d, d=%d, mid=%d, psum=%d, expected=%d", Aa_dec, Wb_dec, Ac_dec, Wd_dec, Aa_dec*Wb_dec+Ac_dec*Wd_dec, psum_print, expected_print);
+
 
      if (i%2 == 0) begin
-      a_q <= a;
-      b_q <= b;
-      c_q <= c;
-      d_q <= d;
+      a_q = a;
+      b_q = b;
+      c_q = c;
+      d_q = d;
+      out_high = 0;
+      compare_high = 0;
      end
-     else
+     else begin
       expected_out = mac_predicted(a, b, c, d, a_q, b_q, c_q, d_q, psum);
+      out_high = 1;
+      compare_high = 1;
+     end
   end
 
+  compare_high = 1;
 
+  for (i=10; i < 12; i=i+1) begin
+    #1 clk = 1'b1;
+    if (compare_high) begin
+      if (expected_print == out_print) $display("Output match\n");
+      else $display("Output don't match, expected=%d, out=%d\n", expected_print, out_print);
+    end
+    #1 clk = 1'b0;
+    out_high = 0;
+    out_print = out;
+    expected_print = expected_out;
+  end
 
   #1 clk = 1'b1;
   #1 clk = 1'b0;

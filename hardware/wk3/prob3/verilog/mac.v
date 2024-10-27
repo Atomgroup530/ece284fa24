@@ -16,8 +16,8 @@ output signed [2*bw:0] out;// signed output
 wire signed [bw:0] a_ex;
 wire signed [bw:0] c_ex;
 
-assign a_ex = a;
-assign c_ex = c;
+assign a_ex = {1'b0,a};
+assign c_ex = {1'b0,c};
 
 assign out = c_ex * d + a_ex * b;
 

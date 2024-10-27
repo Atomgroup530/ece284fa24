@@ -1,6 +1,6 @@
 // Created by prof. Mingu Kang @VVIP Lab in UCSD ECE department
 // Please do not spread this code without permission 
-module mac_wrapper (clk, out, a, b, c, d, psum);
+module mac_wrapper (out_high, clk, out, a, b, c, d, psum);
 
 parameter bw = 4;
 parameter psum_bw = 16;
@@ -11,6 +11,7 @@ input  [bw-1:0] b;
 input  [bw-1:0] c;
 input  [bw-1:0] d;
 input  [psum_bw-1:0] psum;
+input out_high;
 
 input  clk;
 
@@ -33,6 +34,8 @@ acc #(.bw(bw), .psum_bw(psum_bw)) acc_instance (
         .a(mid_q),
         .b(mid),
         .c(psum),
+        .clk(clk),
+        .out_high(out_high),
         .out(out)
 );
 
