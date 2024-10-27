@@ -14,7 +14,7 @@ output signed [psum_bw-1:0] out;// signed output
 
 wire signed [bw:0] a_ex;
 
-assign a_ex = {2'b0,a};
+assign a_ex = {1'b0,a};
 
 assign out = c + a_ex * b;
 
