@@ -63,7 +63,37 @@ endfunction
 
 function [3:0] x_bin ;
 
-...
+  // my code
+  input integer activation ;
+  begin
+    
+    if (activation>7) begin
+      x_bin[3] = 1;
+      activation = activation - 8;
+    end
+    else
+      x_bin[3] = 0;
+
+    if (activation>3) begin
+     x_bin[2] = 1;
+     activation = activation - 4;
+    end
+    else 
+     x_bin[2] = 0;
+
+    if (activation>1) begin
+     x_bin[1] = 1;
+     activation = activation - 2;
+    end
+    else 
+     x_bin[1] = 0;
+
+    if (activation>0) 
+     x_bin[0] = 1;
+    else 
+     x_bin[0] = 0;
+
+  end
 
 endfunction
 
@@ -71,7 +101,11 @@ endfunction
 // Below function is for verification
 function [psum_bw-1:0] mac_predicted;
   
-...
+  input signed [bw-1:0] a;               // unsigned activation
+  input signed [bw-1:0] b;        // signed weight
+  input signed [psum_bw-1:0] c;   // signed psum
+
+  mac_predicted = c + a*b;
 
 endfunction
 
