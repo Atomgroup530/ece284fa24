@@ -20,8 +20,8 @@ module l0 (clk, in, out, rd, wr, o_full, reset, o_ready);
   
   genvar i;
 
-  assign o_ready = ?? ;
-  assign o_full  = ?? ;
+  assign o_ready = (|full == 0)? 1 : 0;
+  assign o_full  = (|full == 1)? 1 : 0;
 
 
   for (i=0; i<row ; i=i+1) begin : row_num
@@ -29,11 +29,11 @@ module l0 (clk, in, out, rd, wr, o_full, reset, o_ready);
 	 .rd_clk(clk),
 	 .wr_clk(clk),
 	 .rd(rd_en[i]),
-	 .wr(...),
-         .o_empty(...),
-         .o_full(...),
-	 .in(...),
-	 .out(...),
+	 .wr(wr),
+    .o_empty(empty[i]),
+    .o_full(full[i]),
+	 .in(in[bw*(i+1)-1:bw*i]),
+	 .out(out[bw*(i+1)-1:bw*i]),
          .reset(reset));
   end
 
@@ -45,13 +45,20 @@ module l0 (clk, in, out, rd, wr, o_full, reset, o_ready);
    else
 
       /////////////// version1: read all row at a time ////////////////
-      ...
+      // rd_en <= {{row}{rd}};
       ///////////////////////////////////////////////////////
 
 
 
       //////////////// version2: read 1 row at a time /////////////////
-      ...
+      rd_en[0] <= rd;
+      rd_en[1] <= rd_en[0];
+      rd_en[2] <= rd_en[1];
+      rd_en[3] <= rd_en[2];
+      rd_en[4] <= rd_en[3];
+      rd_en[5] <= rd_en[4];
+      rd_en[6] <= rd_en[5];
+      rd_en[7] <= rd_en[6];
       ///////////////////////////////////////////////////////
     end
 
